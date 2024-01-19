@@ -76,6 +76,8 @@ Example:
 Bearer Token: eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJTaGltYmh1Iiwic3ViIjoiSldUIFRva2VuIiwidXNlcm5hbWUiOiJza0BnbWFpbC5jb20iLCJyb2xlIjoiUk9MRV9VU0VSIiwiaWF0IjoxNjg1Njc3Mzg3LCJleHAiOjE2ODU3MDczODd9.VwM2IGD1fABjEcnNoMb4uIyBnYe3_BmZGx33dElaD-E
 Response: Welcome to Nikhitha's
 Website: Vadla Nikhitha
+
+
 Tech Stack
 Java
 Spring Boot
@@ -84,7 +86,9 @@ Spring Security
 JWT Token
 Lombok
 Maven
+
 Validation Rules
+
 The following validation rules are applied to the user entity:
 
 Full Name:
