@@ -1,2 +1,494 @@
 
-GreenStitch_Backend_Assignment/.mvn/wrapper/maven-wrapper.jar
+Login and Registration REST API with Spring Security
+ Last Updated: 03-07-2023  Springjava
+In this example, we will learn how to implement login and registration REST API using spring boot, spring security, hibernate and the H2 database.
+We will create an example of Spring Boot REST application where we will build two web services. One web service of user registration and the other is for user login.
+
+Table of Content
+1. Keep Eclipse IDE ready(STS integrated)
+2. Create a Spring Boot Starter Project 
+3. Maven Dependency
+4. Define Database configuration in the application.properties file
+5. Create entity class
+6. Create a repository
+7. Create a service
+8. Create a DTO class
+9. Create a Controller class
+10. Create a Spring Security Config class
+11. Insert data in the database using SpringBootApplication class
+12. Run the Application
+13. Conclusion
+
+1. Keep Eclipse IDE ready(STS integrated)
+Refer to this article How to Create Spring Project in IDE  to create Spring Boot Project in Eclipse IDE.
+
+2. Create a Spring Boot Starter Project 
+Add the following dependencies: 
+• Spring Web 
+• Spring Security
+• H2 Database
+• Spring Data JPA
+
+login_and_registration_rest_api_with_spring_security
+
+3. Maven Dependency
+pom.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.11</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>com.springjava</groupId>
+    <artifactId>Login_Registration_Rest_Api_Spring_Security</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>Login_Registration_Rest_Api_Spring_Security</name>
+    <description>Demo project for Spring Boot</description>
+    <properties>
+        <java.version>16</java.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>    
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+4. Define Database configuration in the application.properties file
+spring.datasource.url=jdbc:h2:mem:test
+spring.datasource.username=sa
+spring.datasource.password=
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect
+spring.jpa.hibernate.ddl-auto=update
+spring.h2.console.enabled=true
+server.port=8888
+5. Create entity class
+Role.java
+package com.springjava.entity;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="roles")
+public class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    private String name;
+
+    public Role() {
+
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+}
+User.java
+package com.springjava.entity;
+
+import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
+@Entity
+@Table(name="users")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    private String name;
+    @Column(nullable = false, unique = true)
+    private String userName;
+    @Column(nullable = false, unique = true)
+    private String email;
+    @Column(nullable = false)
+    private String password;
+    @ManyToMany
+    @LazyCollection(LazyCollectionOption.FALSE)
+    private Set<Role> roles;
+    public Integer getId() {
+          return id;
+      }
+
+      public void setId(Integer id) {
+          this.id = id;
+      }
+
+      public String getName() {
+          return name;
+      }
+
+      public void setName(String name) {
+          this.name = name;
+      }
+
+      public String getUserName() {
+          return userName;
+      }
+
+      public void setUserName(String username) {
+          this.userName = username;
+      }
+
+      public String getEmail() {
+          return email;
+      }
+
+      public void setEmail(String email) {
+          this.email = email;
+      }
+
+      public String getPassword() {
+          return password;
+      }
+
+      public void setPassword(String password) {
+          this.password = password;
+      }
+
+      public Set<Role> getRoles() {
+          return roles;
+      }
+
+      public void setRoles(Set<Role> roles) {
+          this.roles = roles;
+      }
+}
+6. Create a repository
+RoleRepository.java
+package com.springjava.repository;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.springjava.entity.Role;
+public interface RoleRepository extends JpaRepository<Role, Integer> {
+Optional<Role> findByName(String name);
+}
+UserRepository.java 
+package com.springjava.repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import com.springjava.entity.User;
+public interface UserRepository extends JpaRepository<User, Integer> {
+User findByUsernameOrEmail(String username, String email);
+}
+7. Create a service
+UserDetail.java
+package com.springjava.service;
+import java.util.Set;
+import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+import com.springjava.entity.User;
+import com.springjava.repository.UserRepository;
+
+@Service
+public class UserDetail implements UserDetailsService {
+@Autowired    
+UserRepository userRepo;
+
+    @Override
+    public UserDetails loadUserByUsername(String username)throws UsernameNotFoundException {
+        User user = userRepo.findByUserNameOrEmail(username, username);
+        if(user==null){
+            throw new UsernameNotFoundException("User not exists by Username");
+        }
+           
+        Set<GrantedAuthority> authorities = user.getRoles().stream()
+                .map((role) -> new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toSet());
+
+        return new org.springframework.security.core.userdetails.User(username,user.getPassword(),authorities);
+    }
+}
+8. Create a DTO class
+LoginDto.java
+package com.springjava.dto;
+
+public class LoginDto {
+    private String username;
+    private String password;   
+    public LoginDto() {      }   
+    public String getUsername() {      
+        return username;   
+    }   
+    public void setUsername(String username) {      
+        this.username = username;   
+    }   
+    public String getPassword() {      
+        return password;   
+    }   
+    public void setPassword(String password) {      
+        this.password = password;   
+    }
+}
+SignUpDto.java
+package com.springjava.dto;
+
+public class SignUpDto {
+    private String name;
+    private String username;
+    private String email;
+    private String password;
+
+    public SignUpDto() {
+
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+}
+9. Create a Controller class
+HomeController.java
+package com.springjava.controller;
+
+import java.util.Collections;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.springjava.dto.LoginDto;
+import com.springjava.dto.SignUpDto;
+import com.springjava.entity.Role;
+import com.springjava.entity.User;
+import com.springjava.repository.RoleRepository;
+import com.springjava.repository.UserRepository;
+
+
+@RestController
+@RequestMapping("/api")
+public class HomeController {
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    
+
+    @PostMapping("/login")
+    public ResponseEntity<String> authenticateUser(@RequestBody LoginDto loginDto) {
+        Authentication authentication = authenticationManager
+                .authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return new ResponseEntity<>("User login successfully!...", HttpStatus.OK);
+    }
+    
+    
+        @PostMapping("/signup")
+        public ResponseEntity<?> registerUser(@RequestBody SignUpDto signUpDto){
+
+            // checking for username exists in a database
+            if(userRepository.existsByUserName(signUpDto.getUsername())){
+                return new ResponseEntity<>("Username is already exist!", HttpStatus.BAD_REQUEST);
+            }
+
+            // checking for email exists in a database
+            if(userRepository.existsByEmail(signUpDto.getEmail())){
+                return new ResponseEntity<>("Email is already exist!", HttpStatus.BAD_REQUEST);
+            }
+
+            // creating user object
+            User user = new User();
+            user.setName(signUpDto.getName());
+            user.setUserName(signUpDto.getUsername());
+            user.setEmail(signUpDto.getEmail());
+            user.setPassword(passwordEncoder.encode(signUpDto.getPassword()));
+
+            Role roles = roleRepository.findByName("ROLE_ADMIN").get();
+            user.setRoles(Collections.singleton(roles));
+
+            userRepository.save(user);
+
+            return new ResponseEntity<>("User is registered successfully!", HttpStatus.OK);
+
+        }
+}
+10. Create a Spring Security Config class
+SecurityConfig.java
+package com.springjava.security;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+public class SecurityConfig {
+
+    @Bean
+    public static PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        http.csrf().disable()
+        .authorizeRequests().antMatchers("/api/**", "/h2-console/**").permitAll()
+        .anyRequest().authenticated();
+        http.headers().frameOptions().disable();
+
+        return http.build();
+    }
+}
+11. Insert data in the database using SpringBootApplication class
+package com.springjava;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+
+import com.springjava.entity.Role;
+import com.springjava.repository.RoleRepository;
+
+@SpringBootApplication
+public class LoginRegistrationRestApiSpringSecurityApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(LoginRegistrationRestApiSpringSecurityApplication.class, args);
+    }
+    
+    @Bean
+    public CommandLineRunner demo(RoleRepository roleRepo) {
+        return (args) -> {
+            Role role=new Role();
+            role.setName("ROLE_ADMIN");
+            roleRepo.save(role);
+        };
+    }
+}
+12. Run the Application
+To run this application right-click on the SpringBootApplication class, click Run As, then select the Java Application option.
+Testing the API in Postman
+
+login_and_registration_rest_api_with_spring_security
+
+login_and_registration_rest_api_with_spring_security
+
+To Check the H2 Database browse this URL http://localhost:8888/h2-console/
+
+login_and_registration_rest_api_with_spring_security
+
+13. Conclusion
+In this example, we learnt how to implement spring security login and registration rest API in the spring boot example.
+
+What is Spring Boot How to Create a Spring Boot Project in IDE Spring MVC with Spring Boot Configure
