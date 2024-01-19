@@ -9,7 +9,7 @@ Installation and Setup
 - Maven
 - Postman (for testing the API)
 1. Clone the Repository
-git clone https://github.com/VadlaNihitha/GreenStich_Backend_Assignment.git
+git clone https://github.com/VadlaNikhitha/GreenStich_Backend_Assignment.git
 2. Go the Project
 cd GreenStich_Backend_Assignment/GreenStitch_Backend_Assignment
 
@@ -33,6 +33,7 @@ Request Body: User data in the JSON format (e.g., name, email, password).
   "email": "vadlanikhitha2001@gmail.com"
   
 }
+
 Response:
 {
 
@@ -51,13 +52,16 @@ Description: Authenticate a user and retrieve their details.
 Authentication: Basic Authentication (Username and Password)
 Username: vadlanikhitha2001@gmail.com
 Password: Nikhitha@123
+
 Response:
 {
+
     "id": 1,
     "fullName": "Nikhitha Vadla",
     "password": "$2a$10$KVzpEHKFpX2ephA7RXLgqumnZKFy3bT8wdJMW3tYH2yqUJcpZPGSG",
     "email": "vadlanikhitha2001@gmail.com",
     "role": "ROLE_USER"
+    
 }
 
 Welcome Endpoint (Requires Authentication)
