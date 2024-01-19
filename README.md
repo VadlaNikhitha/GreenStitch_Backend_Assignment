@@ -1,5 +1,5 @@
 # GreenStitch_Backend_Assignment
-creating a backend for a login and signup REST API with security features and web tokens for authentication. And using the H2 database for this project ,built on the Spring Boot framework.
+
 Login and Signup Backend API with Security and JWT Tokens
 This project is a backend implementation of a login and signup REST API with security and JWT tokens. It is built using Java, Spring Boot, and utilizes H2 database for data storage. The API endpoints provided below demonstrate the functionality of the application.
 
@@ -9,7 +9,7 @@ Installation and Setup
 - Maven
 - Postman (for testing the API)
 1. Clone the Repository
-git clone https://github.com/Shimbhu77/GreenStich_Backend_Assignment.git
+git clone https://github.com/VadlaNihitha/GreenStich_Backend_Assignment.git
 2. Go the Project
 cd GreenStich_Backend_Assignment/GreenStitch_Backend_Assignment
 
@@ -27,17 +27,21 @@ Description: Register a new user.
 Request Body: User data in the JSON format (e.g., name, email, password).
 
 {
+
   "fullName": "Vadla Nikhitha",
   "password": "vadlanikhitha2001@gmail.com",
   "email": "vadlanikhitha2001@gmail.com"
+  
 }
 Response:
 {
+
     "id": 1,
     "fullName": "Vadla Nikhitha",
     "password": "$2a$10$KVzpEHKFpX2ephA7RXLgqumnZKFy3bT8wdJMW3tYH2yqUJcpZPGSG",
-    "email": "sk@gmail.com",
+    "email": "vadlanikhitha2001@gmail.com",
     "role": "ROLE_USER"
+    
 }
 
 User Login
@@ -52,7 +56,7 @@ Response:
     "id": 1,
     "fullName": "Nikhitha Vadla",
     "password": "$2a$10$KVzpEHKFpX2ephA7RXLgqumnZKFy3bT8wdJMW3tYH2yqUJcpZPGSG",
-    "email": "sk@gmail.com",
+    "email": "vadlanikhitha2001@gmail.com",
     "role": "ROLE_USER"
 }
 
