@@ -1,5 +1,5 @@
 
-Login and Registration REST API with Spring Security
+Login and Signup REST API with Spring Security
  
 In this example, we will learn how to implement login and registration REST API using spring boot, spring security, hibernate and the H2 database.
 We will create an example of Spring Boot REST application where we will build two web services. One web service of user registration and the other is for user login.
